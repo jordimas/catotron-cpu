@@ -46,14 +46,22 @@ def load_tts_model(checkpoint_path=None, waveglow_path=None):
 
     return model, denoiser, waveglow, hparams
 
-def speechGeneration(model, denoiser, waveglow, hparams, text, outAudioPath, removeBias=False):
+def speechGeneration(model, denoiser, waveglow, hparams, text,
+                     outAudioPath, removeBias=False, lang='ca'):
+
+    if lang == 'en':
+        cleaner = ['english_cleaners']
+    elif lang == 'ca':
+        cleaner = ['catalan_cleaners']
+    else:
+        raise ValueError('Unknown language %s'%lang)
 
     # text pre-processing
     text = text.replace('\n\n', '')
     text = text.replace('\n', '')
 
     # Prepare text input
-    sequence = np.array(text_to_sequence(text, ['english_cleaners']))[None, :]
+    sequence = np.array(text_to_sequence(text, cleaner))[None, :]
     sequence = torch.autograd.Variable(torch.from_numpy(sequence)).long()
     
     # decode text input
@@ -80,13 +88,13 @@ if __name__ == "__main__":
 
     # load model
     start = time.time()
-    model, denoiser, waveglow, hparams = load_tts_model(checkpoint_path="models/tacotron2_statedict.pt", waveglow_path="models/waveglow_256channels_ljs_v2.pt")
+    model, denoiser, waveglow, hparams = load_tts_model(checkpoint_path="models/upc_ona_tacotron2.pt", waveglow_path="models/waveglow_256channels_ljs_v2.pt")
     print('model loaded in: ', time.time() - start, 'seconds')
 
     # generate speech and save audio
-    inputText = "Hello Musixmatch, how are you?"
-    outAudioPath = "test.wav"
+    inputText = "Les formes innovadores de la cooperació social desborden i enriqueixen el bagatge de l’economia social i solidària catalana."
+    outAudioPath = "test_ca.wav"
 
     start = time.time()
-    speechGeneration(model, denoiser, waveglow, hparams, inputText, outAudioPath)
+    speechGeneration(model, denoiser, waveglow, hparams, inputText, outAudioPath, lang='ca')
     print('inference done in: ', time.time() - start, 'seconds')
