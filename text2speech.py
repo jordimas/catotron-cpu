@@ -2,7 +2,7 @@
 #
 
 import sys, os
-#sys.path.append('waveglow/')
+sys.path.append('waveglow/')
 
 import numpy as np
 import time
@@ -80,7 +80,7 @@ if __name__ == "__main__":
 
     # load model
     start = time.time()
-    model, denoiser, waveglow, hparams = load_tts_model(checkpoint_path="models/tacotron2_statedict.pt", waveglow_path="models/waveglow_old.pt")
+    model, denoiser, waveglow, hparams = load_tts_model(checkpoint_path="models/tacotron2_statedict.pt", waveglow_path="models/waveglow_256channels_ljs_v2.pt")
     print('model loaded in: ', time.time() - start, 'seconds')
 
     # generate speech and save audio
