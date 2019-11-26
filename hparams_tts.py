@@ -52,7 +52,7 @@ def create_hparams(hparams_string=None, verbose=False):
         ################################
         # Model Parameters             #
         ################################
-        n_symbols=148, #len(symbols),
+        n_symbols=len(symbols),
         symbols_embedding_dim=512,
 
         # Encoder parameters
