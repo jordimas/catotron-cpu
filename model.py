@@ -1,7 +1,4 @@
 import os, sys
-BASE_PATH=os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, BASE_PATH)
-sys.path.insert(0, os.path.join(BASE_PATH ,'audio','tacotron2_text2speech'))
 
 from math import sqrt
 import torch
@@ -9,7 +6,7 @@ from torch.autograd import Variable
 from torch import nn
 from torch.nn import functional as F
 from layers import ConvNorm, LinearNorm
-from tacotron2_text2speech.utils_tts import to_gpu, get_mask_from_lengths
+from utils_tts import to_gpu, get_mask_from_lengths
 
 
 class LocationLayer(nn.Module):
