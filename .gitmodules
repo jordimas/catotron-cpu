@@ -1,0 +1,3 @@
+[submodule "melgan"]
+	path = melgan
+	url = git@github.com:CollectivaT-dev/melgan.git
