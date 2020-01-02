@@ -25,13 +25,11 @@ class Synthesizer:
                                           map_location='cpu')['state_dict'])
     _ = self.model.eval()
 
-    # Load MelGAN for mel2audio synthesis
-    checkpoint = torch.load(v_checkpoint_path, map_location='cpu')
-    hp_melgan = load_hparam(os.path.join(PROJECT_PATH,
-                                         "melgan/config/default.yaml"))
-    self.vocoder_model = Generator(80)
-    self.vocoder_model.load_state_dict(checkpoint['model_g'])
-    self.vocoder_model.eval(inference=False)
+    # Load neurips MelGAN for mel2audio synthesis
+    self.vocoder = torch.hub.load('descriptinc/melgan-neurips', 'load_melgan')
+    melgan_ckpt = torch.load(v_checkpoint_path, map_location='cpu')
+    self.vocoder.mel2wav.load_state_dict(melgan_ckpt)
+
 
   def synthesize(self, text):
     # TODO choose language?
@@ -39,17 +37,21 @@ class Synthesizer:
 
     # Prepare text input
     sequence = np.array(text_to_sequence(text, cleaner))[None, :]
-    sequence = torch.autograd.Variable(torch.from_numpy(sequence)).long()
+    sequence = torch.from_numpy(sequence).to(device='cpu', dtype=torch.int64)
 
     # TODO run within the queue
     # decode text input
     mel_outputs, mel_outputs_postnet, _, alignments = self.model.inference(sequence)
 
     # TODO run within the queue
-    # Synthesize audio from spectrogram using Melgan
+    # Synthesize using neurips Melgan
     with torch.no_grad():
-        audio = self.vocoder_model.inference(mel_outputs_postnet)
-        audio_numpy = audio.data.cpu().numpy()
+        audio = self.vocoder.inverse(mel_outputs_postnet.float())
+    audio_numpy = audio[0].data.cpu().numpy()
+
+    # normalize and convert from float32 to int16 pcm
+    audio_numpy /= np.max(np.abs(audio_numpy))
+    audio_numpy *= 32768
 
     # out
     out = io.BytesIO()
