@@ -7,8 +7,6 @@ import numpy as np
 from hparams_tts import create_hparams
 from train_tts import load_model
 from text import text_to_sequence
-from melgan.model.generator import Generator
-from melgan.utils.hparams import load_hparam
 
 PROJECT_PATH = os.path.dirname(os.path.abspath(__file__))
 
