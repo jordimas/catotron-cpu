@@ -32,7 +32,7 @@ if __name__ == '__main__':
   parser = argparse.ArgumentParser()
   parser.add_argument('--t_checkpoint', help='Full path to tacotron2 checkpoint')
   parser.add_argument('--v_checkpoint', help='Full path to melgan checkpoint')
-  parser.add_argument('--port', type=int, default=9000)
+  parser.add_argument('--port', type=int, default=8000)
   parser.add_argument('--hparams', default='',
     help='Hyperparameter overrides as a comma-separated list of name=value pairs')
   args = parser.parse_args()

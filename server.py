@@ -24,7 +24,7 @@ class SynthesisResource:
 
 synthesizer = Synthesizer()
 # TODO load via config
-t_model_path = os.path.join(PROJECT_PATH, 'models/upc_pau2_tacotron2.pt')
+t_model_path = os.path.join(PROJECT_PATH, 'models/upc_ona2_tacotron2.pt')
 v_model_path = os.path.join(PROJECT_PATH, 'models/melgan_onapau_tacotronSTFT.pt')
 synthesizer.load(t_model_path, v_model_path)
 
