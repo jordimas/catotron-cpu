@@ -24,8 +24,8 @@ class SynthesisResource:
 
 synthesizer = Synthesizer()
 # TODO load via config
-t_model_path = os.path.join(PROJECT_PATH, 'models/upc_ona2_tacotron2.pt')
-v_model_path = os.path.join(PROJECT_PATH, 'models/melgan_onapau_tacotronSTFT.pt')
+t_model_path = os.path.join(PROJECT_PATH, 'models/upc_pau_tacotron2.pt')
+v_model_path = os.path.join(PROJECT_PATH, 'models/melgan_onapau_catotron.pt')
 synthesizer.load(t_model_path, v_model_path)
 
 app = falcon.API()

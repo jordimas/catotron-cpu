@@ -40,8 +40,8 @@ if __name__ == '__main__':
   if args.t_checkpoint and args.v_checkpoint:
       synthesizer.load(args.t_checkpoint, args.v_checkpoint)
   else:
-      t_model_path = os.path.join(PROJECT_PATH, 'models/upc_pau2_tacotron2.pt')
-      v_model_path = os.path.join(PROJECT_PATH, 'models/melgan_onapau_tacotronSTFT.pt')
+      t_model_path = os.path.join(PROJECT_PATH, 'models/upc_pau_tacotron2.pt')
+      v_model_path = os.path.join(PROJECT_PATH, 'models/melgan_onapau_catotron.pt')
       synthesizer.load(t_model_path, v_model_path)
   print('Serving on port %d' % args.port)
   simple_server.make_server('0.0.0.0', args.port, api).serve_forever()

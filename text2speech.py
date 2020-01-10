@@ -1,100 +1,35 @@
-# -*- coding: utf-8 -*-
-#
+import argparse
+import os
 
-import sys, os
-sys.path.append('waveglow/')
+from synthesizer import Synthesizer
 
-import numpy as np
-import time
+PROJECT_PATH = os.path.dirname(os.path.abspath(__file__))
 
-import torch
-import librosa
+def main(args):
+  synthesizer = Synthesizer()
+  if args.t_checkpoint and args.v_checkpoint:
+      synthesizer.load(args.t_checkpoint, args.v_checkpoint)
+  else:
+      t_model_path = os.path.join(PROJECT_PATH, 'models/upc_pau_tacotron2.pt')
+      v_model_path = os.path.join(PROJECT_PATH, 'models/melgan_onapau_catotron.pt')
+      synthesizer.load(t_model_path, v_model_path)
+  audio = synthesizer.synthesize(args.text)
 
-#from .model import Tacotron2
-#from .layers import TacotronSTFT, STFT
-#from .audio_processing import griffin_lim
+  with open(args.out, 'wb') as out:
+    out.write(audio)
 
-from hparams_tts import create_hparams
-from train_tts import load_model
-from text import text_to_sequence
-from waveglow.denoiser import Denoiser
+if __name__ == '__main__':
+  from wsgiref import simple_server
+  parser = argparse.ArgumentParser()
+  parser.add_argument('--t_checkpoint', help='Full path to tacotron2 checkpoint')
+  parser.add_argument('--v_checkpoint', help='Full path to melgan checkpoint')
+  parser.add_argument('--out', help='Full path to output wav file')
+  parser.add_argument('--text', help='Text to be synthesized')
+  parser.add_argument('--hparams', default='',
+    help='Hyperparameter overrides as a comma-separated list of name=value pairs')
+  args = parser.parse_args()
+  os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+  if not (args.out or args.text):
+    raise ValueError('output file and text needs to be given')
 
-
-def warn(*args, **kwargs):
-    pass
-
-import warnings
-warnings.warn = warn
-
-def load_tts_model(checkpoint_path=None, waveglow_path=None):
-
-    # set-up params
-    hparams = create_hparams()
-
-    # load model from checkpoint
-    model = load_model(hparams)
-    model.load_state_dict(torch.load(checkpoint_path, map_location='cpu')['state_dict'])
-    _ = model.eval()
-
-    # Load WaveGlow for mel2audio synthesis and denoiser
-    waveglow = torch.load(waveglow_path, map_location='cpu')['model']
-    waveglow.eval() 
-
-    for k in waveglow.convinv:
-        k.float()
-    denoiser = Denoiser(waveglow)
-
-    return model, denoiser, waveglow, hparams
-
-def speechGeneration(model, denoiser, waveglow, hparams, text,
-                     outAudioPath, removeBias=False, lang='ca'):
-
-    if lang == 'en':
-        cleaner = ['english_cleaners']
-    elif lang == 'ca':
-        cleaner = ['catalan_cleaners']
-    else:
-        raise ValueError('Unknown language %s'%lang)
-
-    # text pre-processing
-    text = text.replace('\n\n', '')
-    text = text.replace('\n', '')
-
-    # Prepare text input
-    sequence = np.array(text_to_sequence(text, cleaner))[None, :]
-    sequence = torch.autograd.Variable(torch.from_numpy(sequence)).long()
-    
-    # decode text input
-    mel_outputs, mel_outputs_postnet, _, alignments = model.inference(sequence)
-
-    # Synthesize audio from spectrogram using WaveGlow
-    with torch.no_grad():
-        audio = waveglow.infer(mel_outputs_postnet, sigma=0.666)
-    
-    # (Optional) Remove WaveGlow bias
-    if removeBias:
-        audio = denoiser(audio, strength=0.01)[:, 0]
-
-    # save
-    audio = audio.cpu().numpy()
-    audio = audio.astype('float64')
-
-    librosa.output.write_wav(outAudioPath, audio[0], hparams.sampling_rate, norm=False)
-
-    return
-
-
-if __name__ == "__main__":
-
-    # load model
-    start = time.time()
-    model, denoiser, waveglow, hparams = load_tts_model(checkpoint_path="models/upc_ona_tacotron2.pt", waveglow_path="models/waveglow_256channels_ljs_v2.pt")
-    print('model loaded in: ', time.time() - start, 'seconds')
-
-    # generate speech and save audio
-    inputText = "Les formes innovadores de la cooperació social desborden i enriqueixen el bagatge de l’economia social i solidària catalana."
-    outAudioPath = "test_ca.wav"
-
-    start = time.time()
-    speechGeneration(model, denoiser, waveglow, hparams, inputText, outAudioPath, lang='ca')
-    print('inference done in: ', time.time() - start, 'seconds')
+  main(args)
