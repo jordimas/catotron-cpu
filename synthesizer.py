@@ -49,7 +49,7 @@ class Synthesizer:
 
     # normalize and convert from float32 to int16 pcm
     audio_numpy /= np.max(np.abs(audio_numpy))
-    audio_numpy *= 32768
+    audio_numpy *= 32768*0.99
 
     # out
     out = io.BytesIO()
