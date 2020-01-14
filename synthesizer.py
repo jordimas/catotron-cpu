@@ -1,5 +1,6 @@
 import os
 import io
+import re
 import torch
 import scipy
 import numpy as np
@@ -29,7 +30,10 @@ class Synthesizer:
     self.vocoder.mel2wav.load_state_dict(melgan_ckpt)
 
 
-  def synthesize(self, text):
+  def synthesize(self, response_text):
+    # pre cleaning
+    text = self.pre_clean(response_text)
+
     # TODO choose language?
     cleaner = ['catalan_cleaners']
 
@@ -58,3 +62,9 @@ class Synthesizer:
     scipy.io.wavfile.write(out, 22050, audio_numpy.astype(np.int16))
 
     return out.getvalue()
+
+  def pre_clean(self, response_text):
+    if not re.search("[.?!:,;][ ]*$", response_text):
+      return '%s. .'%response_text
+    else:
+      return '%s .'%response_text
