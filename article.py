@@ -1,4 +1,5 @@
 import os
+import sys
 import subprocess
 
 from synthesizer import Synthesizer
@@ -37,13 +38,13 @@ def synthesize_paragraph(f):
             with open(outfile, 'wb') as out:
                 out.write(audio)
 
-        paragraph_file = f.replace('.txt','.wav')
-        if not os.path.isfile(paragraph_file):
-            args = ['sox'] + sentences + [paragraph_file]
-            popen = subprocess.Popen(args)
-            popen.wait()
+    paragraph_file = f.replace('.txt','.wav')
+    if not os.path.isfile(paragraph_file):
+        args = ['sox'] + sentences + [paragraph_file]
+        popen = subprocess.Popen(args)
+        popen.wait()
     return paragraph_file
 
 if __name__ == "__main__":
-    path = '/home/baybars/koopx/2020/ladirecta'
+    path = sys.argv[1]
     main(path)
