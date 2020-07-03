@@ -9,7 +9,7 @@ HTML_BODY = os.path.join(PROJECT_PATH, 'templates/demo.html')
 class UIResource:
   def on_get(self, req, res):
     res.content_type = 'text/html'
-    with open(HTML_BODY, 'r') as html_file:
+    with open(HTML_BODY, 'r', encoding='utf-8') as html_file:
         res.body = html_file.read()
 
 class SynthesisResource:
@@ -24,7 +24,7 @@ class SynthesisResource:
 
 synthesizer = Synthesizer()
 # TODO load via config
-t_model_path = os.path.join(PROJECT_PATH, 'models/upc_pau_tacotron2.pt')
+t_model_path = os.path.join(PROJECT_PATH, 'models/upc_ona_tacotron2.pt')
 v_model_path = os.path.join(PROJECT_PATH, 'models/melgan_onapau_catotron.pt')
 synthesizer.load(t_model_path, v_model_path)
 
