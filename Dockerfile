@@ -12,4 +12,5 @@ RUN wget -q https://www.softcatala.org/pub/softcatala/catotron-models/upc_ona_ta
 RUN wget -q https://www.softcatala.org/pub/softcatala/catotron-models/upc_pau_tacotron2.pt
 RUN wget -q https://www.softcatala.org/pub/softcatala/catotron-models/melgan_onapau_catotron.pt
 
+WORKDIR /srv
 ENTRYPOINT ["python", "demo_server.py"]
