@@ -5,9 +5,9 @@ import torch
 import scipy
 import numpy as np
 
-from hparams_tts import create_hparams
-from train_tts import load_model
+from hparams_synth import create_hparams
 from text import text_to_sequence
+from model import Tacotron2
 
 PROJECT_PATH = os.path.dirname(os.path.abspath(__file__))
 
@@ -19,7 +19,7 @@ class Synthesizer:
     hparams = create_hparams()
 
     # load model from checkpoint
-    self.model = load_model(hparams)
+    self.model = Tacotron2(hparams)
     self.model.load_state_dict(torch.load(t_checkpoint_path,
                                           map_location='cpu')['state_dict'])
     _ = self.model.eval()
