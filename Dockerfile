@@ -23,7 +23,7 @@ COPY ./audio_processing.py /srv/audio_processing.py
 COPY ./stft.py /srv/stft.py
 COPY ./text /srv/text
 COPY ./templates /srv/templates
-
+COPY ./demo_server.py /srv/demo_server.py
 
 RUN mkdir /srv/models
 WORKDIR /srv/models
@@ -32,3 +32,4 @@ RUN wget -q https://www.softcatala.org/pub/softcatala/catotron-models/upc_pau_ta
 RUN wget -q https://www.softcatala.org/pub/softcatala/catotron-models/melgan_onapau_catotron.pt
 
 WORKDIR /srv
+ENTRYPOINT ["python", "demo_server.py"]
