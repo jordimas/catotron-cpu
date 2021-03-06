@@ -16,9 +16,9 @@ class SynthesisResource:
   def on_get(self, req, res):
     if not req.params.get('text'):
       raise falcon.HTTPBadRequest()
-    if len(req.params.get('text')) > 150:
-      raise falcon.HTTPBadRequest('String too long',
-                                  'String length shorter than 150 is accepted.')
+#    if len(req.params.get('text')) > 150:
+#      raise falcon.HTTPBadRequest('String too long',
+#                                  'String length shorter than 150 is accepted.')
     res.data = synthesizer.synthesize(req.params.get('text'))
     res.content_type = 'audio/wav'
 
