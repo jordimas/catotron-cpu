@@ -12,6 +12,13 @@ COPY ./requirements-server.txt /srv/requirements.txt
 RUN pip install --no-cache-dir -U pip
 RUN pip install --no-cache-dir -r /srv/requirements.txt
 
+RUN mkdir /srv/models
+WORKDIR /srv/models
+RUN wget -q https://www.softcatala.org/pub/softcatala/catotron-models/upc_ona_tacotron2.pt
+RUN wget -q https://www.softcatala.org/pub/softcatala/catotron-models/upc_pau_tacotron2.pt
+RUN wget -q https://www.softcatala.org/pub/softcatala/catotron-models/melgan_onapau_catotron.pt
+
+
 COPY ./server.py /srv/server.py
 COPY ./synthesizer.py /srv/synthesizer.py
 COPY ./hparam.py /srv/hparam.py
@@ -25,11 +32,6 @@ COPY ./text /srv/text
 COPY ./templates /srv/templates
 COPY ./demo_server.py /srv/demo_server.py
 
-RUN mkdir /srv/models
-WORKDIR /srv/models
-RUN wget -q https://www.softcatala.org/pub/softcatala/catotron-models/upc_ona_tacotron2.pt
-RUN wget -q https://www.softcatala.org/pub/softcatala/catotron-models/upc_pau_tacotron2.pt
-RUN wget -q https://www.softcatala.org/pub/softcatala/catotron-models/melgan_onapau_catotron.pt
 
 WORKDIR /srv
 ENTRYPOINT ["python", "demo_server.py"]
